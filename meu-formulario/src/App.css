@@ -1,0 +1,19 @@
+.App {
+  text-align: center;
+  background-color: rgb(205, 200, 209);
+}
+
+
+
+.App-link {
+  color: #0f1516;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
