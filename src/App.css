@@ -1,0 +1,31 @@
+.App {
+  text-align: center;
+  background-color: rgb(205, 200, 209);
+}
+
+
+
+.App-link {
+  color: #3cad0f;
+}
+
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.modal-fade-in {
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.modal-fade-in.show {
+  opacity: 1;
+  transform: scale(1);
+}
+
