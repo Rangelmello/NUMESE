@@ -1,7 +1,6 @@
-import { useState } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
+import { useEffect, useState } from "react";
 
-export default function Formulario() {
+export default function Formulario({ voltar, onSalvar, dadosIniciais }) {
   const [formData, setFormData] = useState({
     nome: "",
     dataDeNascimento: "",
@@ -11,36 +10,29 @@ export default function Formulario() {
     endereco: "",
     contato: "",
     dataDeAtendimento: "",
-    modalidade: "", // Novo campo para armazenar a modalidade selecionada
+    modalidade: "",
     outroTexto: "",
-    intervecao:"",
-    acompanhamento:"",
-    outroTexto2:""
+    intervecao: "",
+    acompanhamento: ""
   });
-
-
-  const areIntervencao = (e) => {
-    const {name, value, type, checked} = e.target;
-    if(type === "checkbox") {
-      setFormData({
-        ...formData,
-        intervecao: checked ? name : "",
-      });
-    } else {
-      setFormData({
-        ...formData,
-        [name]: value
-      })
+  useEffect(() => {
+    if (dadosIniciais) {
+      setFormData(dadosIniciais);
     }
-  }
-  const motivoAcomponhamento= (e) => {
+  }, [dadosIniciais]);
+  const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
 
-    if (type === "checkbox") {
+    if (name === "modalidade") {
       setFormData({
         ...formData,
-        acompanhamento: checked ? name : "", // Apenas um checkbox pode estar marcado
-        outroTexto2: name === "outro2" && checked ? formData.outroTexto2 : "" // Limpa o campo "Outro" se desmarcado
+        modalidade: value,
+        outroTexto: value !== "outro" ? "" : formData.outroTexto
+      });
+    } else if (type === "checkbox") {
+      setFormData({
+        ...formData,
+        [name]: checked
       });
     } else {
       setFormData({
@@ -50,294 +42,238 @@ export default function Formulario() {
     }
   };
 
-
-
-
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-
-    if (type === "checkbox") {
-      setFormData({
-        ...formData,
-        modalidade: checked ? name : "", // Apenas um checkbox pode estar marcado
-        outroTexto: name === "outro" && checked ? formData.outroTexto : "" // Limpa o campo "Outro" se desmarcado
-      });
-    } else {
-      setFormData({
-        ...formData,
-        [name]: value
-      });
-    }
+  const areIntervencao = (e) => {
+    const { name, type, checked } = e.target;
+    setFormData({
+      ...formData,
+      intervecao: type === "checkbox" && checked ? name : ""
+    });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    alert(JSON.stringify(formData, null, 2)); // Exibe o JSON formatado
+    onSalvar(formData);
   };
 
   return (
-    <div className="container">
-      <h2 className="formulario">Formulário</h2>
-      <h4 className="">FICHA DE ACOMPANHAMENTO DO NÚCLEO DE MEDIAÇÃO SOCIOESCOLAR - NUMESE</h4>
+    <div className="container my-5 p-4 shadow rounded bg-light">
+      <h3 className="text-center mb-4">Formulário</h3>
+      <h5 className="text-center mb-4">
+        Ficha de Acompanhamento do Núcleo de Mediação Socioescolar - NUMESE
+      </h5>
+
       <form onSubmit={handleSubmit}>
-        <div className="row">
-          <div className="col-md-3">
-            <label>Nome</label>
-            <input
-              type="text"
-              name="nome"
-              value={formData.nome}
-              onChange={handleChange}
-              className="form-control"
-            />
-          </div>
-          <div className="col-md-3">
-            <label>Data de Nascimento</label>
-            <input
-              type="date"
-              name="dataDeNascimento"
-              value={formData.dataDeNascimento}
-              onChange={handleChange}
-              className="form-control"
-            />
-          </div>
-          <div className="col-md-3">
-            <label>Instituição de Ensino</label>
-            <input
-              type="text"
-              name="instituicaoDeEnsino"
-              value={formData.instituicaoDeEnsino}
-              onChange={handleChange}
-              className="form-control"
-            />
-          </div>
-          <div className="col-md-3">
-            <label>Ano/Turma</label>
-            <input
-              type="text"
-              name="anoTurma"
-              value={formData.anoTurma}
-              onChange={handleChange}
-              className="form-control"
-            />
-          </div>
-          <div className="col-md-3">
-            <label>Pais/responsável</label>
-            <input
-              type="text"
-              name="paisResponsaveis"
-              value={formData.paisResponsaveis}
-              onChange={handleChange}
-              className="form-control"
-            />
-          </div>
-          <div className="col-md-3">
-            <label>Endereço</label>
-            <input
-              type="text"
-              name="endereco"
-              value={formData.endereco}
-              onChange={handleChange}
-              className="form-control"
-            />
-          </div>
-          <div className="col-md-3">
-            <label>Contato telefônico</label>
-            <input
-              type="tel"
-              name="contato"
-              value={formData.contato}
-              onChange={handleChange}
-              className="form-control"
-            />
-          </div>
-          <div className="col-md-3">
-            <label>Data de Atendimento</label>
-            <input
-              type="date"
-              name="dataDeAtendimento"
-              value={formData.dataDeAtendimento}
-              onChange={handleChange}
-              className="form-control"
-            />
-          </div>
-          
-          {/* Modalidade de Atendimento */}
-          <h5 className="mt-4">MODALIDADE DE ATENDIMENTO</h5>
-          <div className="row">
-            <div className="col-md-2">
+        <fieldset className="mb-4">
+          <legend className="fs-5">Informações Pessoais</legend>
+          <div className="row g-3">
+            <div className="col-md-6">
+              <label>Nome</label>
               <input
-                className="form-check-input"
-                type="checkbox"
-                name="presencial"
-                checked={formData.modalidade === "presencial"}
+                type="text"
+                name="nome"
+                value={formData.nome}
                 onChange={handleChange}
-                id="presencial"
+                className="form-control"
+                required
               />
-              <label className="form-check-label ml-1" htmlFor="presencial">
-                Presencial
-              </label>
             </div>
-
-            <div className="col-md-2">
+            <div className="col-md-6">
+              <label>Data de Nascimento</label>
               <input
-                className="form-check-input"
-                type="checkbox"
-                name="contatoTelefonico"
-                checked={formData.modalidade === "contatoTelefonico"}
+                type="date"
+                name="dataDeNascimento"
+                value={formData.dataDeNascimento}
                 onChange={handleChange}
-                id="contatoTelefonico"
+                className="form-control"
+                required
               />
-              <label className="form-check-label ml-1" htmlFor="contatoTelefonico">
-                Contato Telefônico
-              </label>
             </div>
-            
-            <div className="col-md-2">
+            <div className="col-md-6">
+              <label>Instituição de Ensino</label>
               <input
-                className="form-check-input"
-                type="checkbox"
-                name="outro"
-                checked={formData.modalidade === "outro"}
+                type="text"
+                name="instituicaoDeEnsino"
+                value={formData.instituicaoDeEnsino}
                 onChange={handleChange}
-                id="outro"
+                className="form-control"
+                required
               />
-              <label className="form-check-label ml-1" htmlFor="outro">
-                Outro
-              </label>
-
-              {formData.modalidade === "outro" && (
-                <input
-                  type="text"
-                  className="form-control mt-2"
-                  name="outroTexto"
-                  value={formData.outroTexto}
-                  onChange={handleChange}
-                  placeholder="Especifique..."
-                />
-              )}
+            </div>
+            <div className="col-md-6">
+              <label>Ano/Turma</label>
+              <input
+                type="text"
+                name="anoTurma"
+                value={formData.anoTurma}
+                onChange={handleChange}
+                className="form-control"
+                required
+              />
+            </div>
+            <div className="col-md-6">
+              <label>Pais/Responsável</label>
+              <input
+                type="text"
+                name="paisResponsaveis"
+                value={formData.paisResponsaveis}
+                onChange={handleChange}
+                className="form-control"
+                required
+              />
+            </div>
+            <div className="col-md-6">
+              <label>Endereço</label>
+              <input
+                type="text"
+                name="endereco"
+                value={formData.endereco}
+                onChange={handleChange}
+                className="form-control"
+                required
+              />
+            </div>
+            <div className="col-md-6">
+              <label>Contato Telefônico</label>
+              <input
+                type="tel"
+                name="contato"
+                value={formData.contato}
+                onChange={handleChange}
+                className="form-control"
+                required
+              />
+            </div>
+            <div className="col-md-6">
+              <label>Data de Atendimento</label>
+              <input
+                type="date"
+                name="dataDeAtendimento"
+                value={formData.dataDeAtendimento}
+                onChange={handleChange}
+                className="form-control"
+                required
+              />
             </div>
           </div>
+        </fieldset>
 
-
-          <h5 className="mt-4">ÁREA DE INTERVENÇÃO</h5>
+        <fieldset className="mb-4">
+          <legend className="fs-5">Modalidade de Atendimento</legend>
           <div className="row">
-            <div className="col-md-2">
-              <input
-                className="form-check-input"
-                type="checkbox"
-                name="psicologico"
-                checked={formData.intervecao === "psicologico"}
-                onChange={areIntervencao}
-                id="psicologico"
-              />
-              <label className="form-check-label ml-1" htmlFor="psicologico">
-                psicologico
-              </label>
-            </div>
-
-            <div className="col-md-2">
-              <input
-                className="form-check-input"
-                type="checkbox"
-                name="social"
-                checked={formData.intervecao === "social"}
-                onChange={areIntervencao}
-                id="social"
-              />
-              <label className="form-check-label ml-1" htmlFor="social">
-                social
-              </label>
-            </div>
-            
-            <div className="col-md-2">
-              <input
-                className="form-check-input"
-                type="checkbox"
-                name="multiprofissional"
-                checked={formData.intervecao === "multiprofissional"}
-                onChange={areIntervencao}
-                id="multiprofissional"
-              />
-              <label className="form-check-label ml-1" htmlFor="multiprofissional">
-                multiprofissional
-              </label>
-
-            </div>
+            {[{ value: "presencial", label: "Presencial" }, { value: "contatoTelefonico", label: "Contato Telefônico" }, { value: "outro", label: "Outro" }].map((item) => (
+              <div key={item.value} className="col-md-4 mb-2 d-flex align-items-center">
+                <div className="form-check me-2">
+                  <input
+                    className="form-check-input"
+                    type="radio"
+                    name="modalidade"
+                    value={item.value}
+                    checked={formData.modalidade === item.value}
+                    onChange={handleChange}
+                    id={item.value}
+                    required
+                  />
+                </div>
+                <label className="form-check-label" htmlFor={item.value}>
+                  {item.label}
+                </label>
+              </div>
+            ))}
           </div>
-          <h5 className="mt-4">MOTIVO DO ACOMPANHAMENTO:</h5>
+          {formData.modalidade === "outro" && (
+            <div className="mt-3">
+              <label>Descreva a outra modalidade</label>
+              <input
+                type="text"
+                name="outroTexto"
+                value={formData.outroTexto}
+                onChange={handleChange}
+                className="form-control"
+                required
+              />
+            </div>
+          )}
+        </fieldset>
+
+        <fieldset className="mb-4">
+          <legend className="fs-5">Área de Intervenção</legend>
           <div className="row">
-            <div className="col-md-2">
-              <input
-                className="form-check-input"
-                type="checkbox"
-                name="acomPsicologico"
-                checked={formData.acompanhamento === "acomPsicologico"}
-                onChange={motivoAcomponhamento}
-                id="acomPsicologico"
-              />
-              <label className="form-check-label ml-1" htmlFor="acomPsicologico">
-                Acompanhamento psicologico
-              </label>
-            </div>
+            {["psicologico", "social", "multiprofissional"].map((item) => (
+              <div
+                key={item}
+                className="col-md-4 mb-2 d-flex align-items-center"
+              >
+                <div className="form-check me-2">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    name={item}
+                    checked={formData.intervecao === item}
+                    onChange={areIntervencao}
+                    id={item}
+                  />
+                </div>
+                <label className="form-check-label" htmlFor={item}>
+                  {item.charAt(0).toUpperCase() + item.slice(1)}
+                </label>
+              </div>
+            ))}
+          </div>
+        </fieldset>
 
-            <div className="col-md-2">
-              <input
-                className="form-check-input"
-                type="checkbox"
-                name="acomSocial"
-                checked={formData.acompanhamento === "acomSocial"}
-                onChange={motivoAcomponhamento}
-                id="acomSocial"
-              />
-              <label className="form-check-label ml-1" htmlFor="acomSocial">
-                Acompanhamento Social
-              </label>
-            </div>
-
-            <div className="col-md-2">
-              <input
-                className="form-check-input"
-                type="checkbox"
-                name="buscaAtiva"
-                checked={formData.acompanhamento === "buscaAtiva"}
-                onChange={motivoAcomponhamento}
-                id="buscaAtiva"
-              />
-              <label className="form-check-label ml-1" htmlFor="buscaAtiva">
-                Busca Ativa Escolar
-              </label>
-            </div>
-            
-            <div className="col-md-2">
-              <input
-                className="form-check-input"
-                type="checkbox"
-                name="outro2"
-                checked={formData.acompanhamento === "outro2"}
-                onChange={motivoAcomponhamento}
-                id="outro2"
-              />
-              <label className="form-check-label ml-1" htmlFor="outro2">
-                Outro
-              </label>
-
-              {formData.modalidade === "outro2" && (
-                <input
-                  type="text"
-                  className="form-control mt-2"
-                  name="outroTexto2"
-                  value={formData.outroTexto2}
-                  onChange={motivoAcomponhamento}
-                  placeholder="Especifique..."
-                />
-              )}
+        <fieldset className="mb-4">
+          <legend className="fs-5">Motivo do Acompanhamento</legend>
+          <div className="row">
+            <div className="col-md-6">
+              <select
+                className="form-select"
+                name="acompanhamento"
+                value={formData.acompanhamento}
+                onChange={handleChange}
+                aria-label="Selecione o motivo do acompanhamento"
+                required
+              >
+                <option value="">Selecione o motivo</option>
+                <option value="Acompanhamento psicológico">Acompanhamento psicológico</option>
+                <option value="Acompanhamento social">Acompanhamento social</option>
+                <option value="busca Ativa">Busca ativa escolar</option>
+                <option value="Acompanhamento e monitoramento de frequência escolar">Acompanhamento e monitoramento de frequência escolar</option>
+                <option value="Mediação de conflito">Mediação de conflito</option>
+                <option value="Ações coletivas">Ações coletivas</option>
+                <option value="Acompanhamento individual">Acompanhamento individual</option>
+                <option value="Acompanhamento de caso">Acompanhamento de caso</option>
+                <option value="Acompanhamento familiar">Acompanhamento familiar</option>
+                <option value="Encaminhamento para a rede">Encaminhamento para a rede</option>
+                <option value="Acolhimento de servidores">Acolhimento de servidores</option>
+                <option value="Acompanhamento de adolescentes do PROAMA">Acompanhamento de adolescentes do PROAMA</option>
+                <option value="Escuta especializada">Escuta especializada</option>
+              </select>
             </div>
           </div>
+        </fieldset>
+        <div className="mb-3">
+  <label htmlFor="descricaoAcompanhamento" className="form-label">
+    Descrição de Acompanhamento
+  </label>
+  <textarea 
+    className="form-control"
+    id="descricaoAcompanhamento"
+    rows="3"
+    value={formData.descricaoAcompanhamento || ""}
+    onChange={(e) =>
+      setFormData({ ...formData, descricaoAcompanhamento: e.target.value })
+    }
+  ></textarea>
+</div>
+
+        <div className="text-center">
+          <button type="submit" className="btn btn-primary px-5 me-3">
+            Salvar
+          </button>
+          <button type="button" className="btn btn-secondary px-5" onClick={voltar}>
+            Voltar
+          </button>
         </div>
-        <button type="submit" className="btn btn-primary mt-3">
-          Salvar
-        </button>
       </form>
     </div>
   );

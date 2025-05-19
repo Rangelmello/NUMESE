@@ -18,3 +18,14 @@
     transform: rotate(360deg);
   }
 }
+.modal-fade-in {
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.modal-fade-in.show {
+  opacity: 1;
+  transform: scale(1);
+}
+
