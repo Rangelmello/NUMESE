@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import TelaInicial from "./telaInicial";
 import Formulario from "./formulario";
 import PessoasCadastradas from "./PessoasCadastradas";
+import Relatorio from "./relatorio";
 import "./App.css";
 
 export default function App() {
@@ -85,7 +86,7 @@ export default function App() {
             setTela("formulario");
           }}
           onPessoas={() => setTela("pessoas")}
-          onRelatorios={() => alert("Relatórios - ainda não implementado")}
+          onRelatorios={() => setTela("relatorios")} 
         />
       )}
 
@@ -107,6 +108,10 @@ export default function App() {
           editarPessoa={editarPessoa}
           excluirPessoa={excluirPessoa}
         />
+      )}
+
+      {tela === "relatorios" && (
+        <Relatorio pessoas={pessoas} voltar={voltarParaInicial} />
       )}
     </>
   );
